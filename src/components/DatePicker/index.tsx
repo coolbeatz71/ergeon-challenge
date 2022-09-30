@@ -1,3 +1,4 @@
+// eslint-disable no-unused-expressions
 import { memo, useEffect, useRef, useState } from "react";
 import {
   DAY_NAMES,
@@ -99,7 +100,7 @@ const DatePicker = ({
         setSelectedDate(minDate);
       } else setMonth(defaultValue.getMonth());
     }
-  }, []);
+  }, [minDate, defaultValue]);
 
   useEffect(() => {
     setIsOpen(showCalendar);
