@@ -1,0 +1,18 @@
+@import "colors.scss";
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5rem;
+
+  .btn {
+    color: $white;
+    padding: 1rem;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 6px 30px -10px rgba($greyDark, 1);
+  }
+}
