@@ -1,23 +1,22 @@
 // eslint-disable no-unused-expressions
-import { memo, useEffect, useRef, useState } from "react";
+import { FC, memo, useEffect, useRef, useState } from "react";
 import {
   DAY_NAMES,
   MAX_YEAR,
   MIN_YEAR,
   MONTH_NAMES,
 } from "../../constants/app";
-import {
-  BLACK_COLOR,
-  DEFAULT_COLOR_SCHEME,
-  WHITE_COLOR,
-} from "../../constants/colors";
-import Days from "../Days";
-import Button from "../Button";
+import { DEFAULT_COLOR_SCHEME, WHITE_COLOR } from "../../constants/colors";
+import Days from "./Days";
+import ArrowButton from "./ArrowButton";
 import { changeMonth, getHeader, selectDate } from "../../utils";
+import Calendar from "./Calendar";
+import SelectMonths from "./SelectMonths";
 
 import styles from "./index.module.scss";
+import SelectYear from "./SelectYear";
 
-interface Props {
+interface IDatePickerProps {
   minDate?: Date;
   maxDate?: Date;
   isOpen?: boolean;
@@ -33,7 +32,7 @@ interface Props {
   onChange?: (date: Date | null) => void;
 }
 
-const DatePicker = ({
+const DatePicker: FC<IDatePickerProps> = ({
   onClose,
   onChange,
   dayNames,
@@ -47,7 +46,7 @@ const DatePicker = ({
   colorScheme = DEFAULT_COLOR_SCHEME,
   minDate = new Date(MIN_YEAR, 0, 1),
   maxDate = new Date(MAX_YEAR, 11, 31),
-}: Props) => {
+}) => {
   const [isOpen, setIsOpen] = useState(showCalendar);
   const [calendar, setCalendar] = useState<Date[]>([]);
   const [days] = useState<string[]>(
@@ -135,33 +134,21 @@ const DatePicker = ({
 
         <div className={styles.nav}>
           <div className={styles.selector}>
-            <select
-              onChange={(e) => setMonth(parseInt(e.target.value))}
-              value={month}
-            >
-              {months.map((monthName, index) => (
-                <option key={index} value={index}>
-                  {monthName}
-                </option>
-              ))}
-            </select>
-            <select
-              onChange={(e) => setYear(parseInt(e.target.value))}
-              value={year}
-            >
-              {Array(maxDate.getFullYear() - minDate.getFullYear() + 1)
-                .fill(0)
-                .map((_, index) => (
-                  <option key={index} value={maxDate.getFullYear() - index}>
-                    {maxDate.getFullYear() - index}
-                  </option>
-                ))}
-            </select>
+            <SelectMonths
+              month={month}
+              monthsList={months}
+              setMonth={setMonth}
+            />
+            <SelectYear
+              year={year}
+              setYear={setYear}
+              minDate={minDate}
+              maxDate={maxDate}
+            />
           </div>
           <div className={styles.prevNext}>
-            <Button
+            <ArrowButton
               type="decrement"
-              className={styles.navButton}
               disabled={
                 minDate.getFullYear() === year && minDate.getMonth() === month
               }
@@ -169,9 +156,8 @@ const DatePicker = ({
                 changeMonth({ increment: -1, year, month, setYear, setMonth })
               }
             />
-            <Button
+            <ArrowButton
               type="increment"
-              className={styles.navButton}
               disabled={
                 maxDate.getFullYear() === year && maxDate.getMonth() === month
               }
@@ -183,55 +169,27 @@ const DatePicker = ({
         </div>
 
         <div className={styles.body}>
-          <Days
-            daysList={days}
-            contentClassName={styles.day}
-            containerClassName={styles.days}
-          />
+          <Days daysList={days} />
           <div className={styles.calendar}>
-            {calendar.map((day, index) => (
-              <div
-                className={[
-                  styles.date,
-                  day.getMonth() === month ? styles.inside : styles.outside,
-                ].join(" ")}
-                key={index}
-              >
-                <button
-                  style={{
-                    opacity:
-                      day.getDate() === defaultValue.getDate() &&
-                      day.getMonth() === defaultValue.getMonth()
-                        ? 0.3
-                        : 1,
-                    backgroundColor:
-                      selectedDate?.getTime() === day.getTime() ||
-                      (day.getDate() === defaultValue.getDate() &&
-                        day.getMonth() === defaultValue.getMonth())
-                        ? colorScheme
-                        : WHITE_COLOR,
-                    color:
-                      selectedDate?.getTime() === day.getTime()
-                        ? WHITE_COLOR
-                        : BLACK_COLOR,
-                  }}
-                  onClick={() =>
-                    selectDate({
-                      day,
-                      setYear,
-                      onChange,
-                      setMonth,
-                      setSelectedDate,
-                    })
-                  }
-                  disabled={
-                    day.getTime() < minDate.getTime() ||
-                    day.getTime() > maxDate.getTime()
-                  }
-                >
-                  {day.getDate()}
-                </button>
-              </div>
+            {calendar.map((day) => (
+              <Calendar
+                day={day}
+                month={month}
+                minDate={minDate}
+                maxDate={maxDate}
+                colorScheme={colorScheme}
+                defaultDate={defaultValue}
+                selectedDate={selectedDate}
+                onSelectDate={() =>
+                  selectDate({
+                    day,
+                    setYear,
+                    onChange,
+                    setMonth,
+                    setSelectedDate,
+                  })
+                }
+              />
             ))}
           </div>
         </div>
