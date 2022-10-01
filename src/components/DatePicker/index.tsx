@@ -99,7 +99,7 @@ const DatePicker: FC<IDatePickerProps> = ({
         setSelectedDate(minDate);
       } else setMonth(defaultValue.getMonth());
     }
-  }, [minDate, defaultValue]);
+  }, []);
 
   useEffect(() => {
     setIsOpen(showCalendar);
@@ -171,14 +171,14 @@ const DatePicker: FC<IDatePickerProps> = ({
         <div className={styles.body}>
           <Days daysList={days} />
           <div className={styles.calendar}>
-            {calendar.map((day) => (
+            {calendar.map((day, idx) => (
               <Calendar
+                key={idx}
                 day={day}
                 month={month}
                 minDate={minDate}
                 maxDate={maxDate}
                 colorScheme={colorScheme}
-                defaultDate={defaultValue}
                 selectedDate={selectedDate}
                 onSelectDate={() =>
                   selectDate({

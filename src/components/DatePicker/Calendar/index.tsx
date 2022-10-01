@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { BLACK_COLOR, WHITE_COLOR } from "../../../constants/colors";
+
 import styles from "./../index.module.scss";
 
 interface ICalendarProps {
@@ -7,10 +8,9 @@ interface ICalendarProps {
   minDate: Date;
   maxDate: Date;
   month: number;
-  defaultDate: Date;
   colorScheme: string;
-  selectedDate: Date | null;
   onSelectDate: () => void;
+  selectedDate: Date | null;
 }
 
 const Calendar: FC<ICalendarProps> = ({
@@ -18,11 +18,16 @@ const Calendar: FC<ICalendarProps> = ({
   month,
   minDate,
   maxDate,
-  defaultDate,
   colorScheme,
   selectedDate,
   onSelectDate,
 }) => {
+  const today = new Date();
+  const highlightToday =
+    day.getDate() === today.getDate() &&
+    day.getMonth() === today.getMonth() &&
+    day.getFullYear() === today.getFullYear();
+
   return (
     <div
       className={[
@@ -32,15 +37,9 @@ const Calendar: FC<ICalendarProps> = ({
     >
       <button
         style={{
-          opacity:
-            day.getDate() === defaultDate.getDate() &&
-            day.getMonth() === defaultDate.getMonth()
-              ? 0.3
-              : 1,
+          opacity: highlightToday ? 0.3 : 1,
           backgroundColor:
-            selectedDate?.getTime() === day.getTime() ||
-            (day.getDate() === defaultDate.getDate() &&
-              day.getMonth() === defaultDate.getMonth())
+            selectedDate?.getTime() === day.getTime() || highlightToday
               ? colorScheme
               : WHITE_COLOR,
           color:
